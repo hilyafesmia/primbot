@@ -1,0 +1,42 @@
+'use strict';
+const rp = require('request-promise');
+const TELEGRAM_TOKEN = '5534630540:AAF6Q76rFYGr-W7c5tKblGypbCm4GROc_bE';
+
+const pasaran = ['Pon', 'Wage', 'Kliwon', 'Legi', 'Pahing'];
+const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+async function sendToUser(chat_id, text) {
+  const options = {
+    method: 'GET',
+    uri: `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
+    qs: {
+      chat_id,
+      text
+    }
+  };
+
+  return rp(options);
+}
+
+module.exports.primbot = async (event) => {
+  const body = JSON.parse(event.body);
+  const {chat, text} = body.message;
+
+  const tglRegex = /[0-9]{2}\/[0-9]{2}\/[0-9]{4}/;
+  const helpText = 'Ceritanya ini nanti ada list of commands and how to use them'
+
+  if (text == '/weton') {
+    await sendToUser(chat.id, 'Masukkan tanggal lahir (format: mm/dd/yyyy)');
+  }
+  else if (tglRegex.test(text)) {
+    
+	await sendToUser(chat.id, 'jalankan hitung weton');
+  }
+  else if (text == '/help') {
+    await sendToUser(chat.id, helpText);
+  }
+  else {
+    await sendToUser(chat.id, 'saya tidak mengerti 🥺');
+  }
+  return { statusCode: 200 };
+};
